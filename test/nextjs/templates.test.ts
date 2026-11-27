@@ -11,6 +11,7 @@ import {
   getGenerateMetadataSnippet,
   getRootLayoutWithGenerateMetadata,
   getSentryExamplePageContents,
+  getSentryDefaultUnderscoreErrorPage,
   getSentryExamplePagesDirApiRoute,
   getSentryExampleAppDirApiRoute,
 } from '../../src/nextjs/templates';
@@ -791,6 +792,25 @@ describe('Next.js code templates', () => {
     });
   });
 
+  describe('getSentryDefaultUnderscoreErrorPage', () => {
+    it('generates a TypeScript error page with typed props and context', () => {
+      const template = getSentryDefaultUnderscoreErrorPage(true);
+
+      expect(template).toContain('import type { NextPage, NextPageContext } from "next";');
+      expect(template).toContain('const CustomErrorComponent: NextPage<{ statusCode: number }>');
+      expect(template).toContain('(props: { statusCode: number })');
+      expect(template).toContain('async (contextData: NextPageContext)');
+    });
+
+    it('keeps the JavaScript error page untyped', () => {
+      const template = getSentryDefaultUnderscoreErrorPage(false);
+
+      expect(template).not.toContain('NextPageContext');
+      expect(template).toContain('const CustomErrorComponent = (props) =>');
+      expect(template).toContain('async (contextData) =>');
+    });
+  });
+
   describe('getSentryExamplePagesDirApiRoute', () => {
     it('generates Pages Router API route with TypeScript types', () => {
       const template = getSentryExamplePagesDirApiRoute({
@@ -799,7 +819,7 @@ describe('Next.js code templates', () => {
 
       expect(template).toContain('constructor(message: string | undefined)');
       expect(template).toContain('class SentryExampleAPIError extends Error');
-      expect(template).toContain('export default function handler(_req, res)');
+      expect(template).toContain('export default function handler(_req: NextApiRequest, res: NextApiResponse)');
     });
 
     it('generates Pages Router API route without TypeScript types', () => {
