@@ -519,11 +519,14 @@ export function getSentryExamplePagesDirApiRoute({
   const sentryImport = `import * as Sentry from "@sentry/nextjs";
 
 `;
+  const nextImport = isTypeScript
+    ? 'import type { NextApiRequest, NextApiResponse } from "next";\\n\\n'
+    : '';
 
   const loggerCall = `  Sentry.logger.info("Sentry example API called");
 `;
 
-  return `${sentryImport}// Custom error class for Sentry testing
+  return `${sentryImport}${nextImport}// Custom error class for Sentry testing
 class SentryExampleAPIError extends Error {
   constructor(message${isTypeScript ? ': string | undefined' : ''}) {
     super(message);
@@ -531,7 +534,7 @@ class SentryExampleAPIError extends Error {
   }
 }
 // A faulty API route to test Sentry's error monitoring
-export default function handler(_req, res) {
+export default function handler(_req${isTypeScript ? ': NextApiRequest' : ''}, res${isTypeScript ? ': NextApiResponse' : ''}) {
 ${loggerCall}throw new SentryExampleAPIError("This error is raised on the backend called by the example page.");
 res.status(200).json({ name: "John Doe" });
 }
@@ -595,15 +598,15 @@ export ${
 `;
 }
 
-export function getSentryDefaultUnderscoreErrorPage() {
+export function getSentryDefaultUnderscoreErrorPage(isTypeScript: boolean) {
   return `import * as Sentry from "@sentry/nextjs";
-import Error from "next/error";
+${isTypeScript ? 'import type { NextPage, NextPageContext } from "next";\\n' : ''}import Error from "next/error";
 
-const CustomErrorComponent = (props) => {
+const CustomErrorComponent${isTypeScript ? ': NextPage<{ statusCode: number }>' : ''} = (props${isTypeScript ? ': { statusCode: number }' : ''}) => {
   return <Error statusCode={props.statusCode} />;
 };
 
-CustomErrorComponent.getInitialProps = async (contextData) => {
+CustomErrorComponent.getInitialProps = async (contextData${isTypeScript ? ': NextPageContext' : ''}) => {
   // In case this is running in a serverless function, await this in order to give Sentry
   // time to send the error before the lambda exits
   await Sentry.captureUnderscoreErrorException(contextData);
