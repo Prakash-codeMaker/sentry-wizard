@@ -114,20 +114,31 @@ async function runCloudflareWizardWithTelemetry(
     sdkSupportsDataCollection(installedSdkVersion, '^10') &&
     (await askShouldReduceDataCollection());
 
-  await traceStep('Create Sentry initialization', async () => {
-    try {
-      await createSentryInitFile(
-        selectedProject.keys[0].dsn.public,
-        selectedFeatures,
-        reduceDataCollection,
-      );
-    } catch (e) {
-      clack.log.warn(
-        'Could not automatically set up Sentry initialization. Please set it up manually using instructions from https://docs.sentry.io/platforms/javascript/guides/cloudflare/',
-      );
-      debug(e);
-    }
-  });
+  const sentryInitializationSucceeded = await traceStep(
+    'Create Sentry initialization',
+    async () => {
+      try {
+        return await createSentryInitFile(
+          selectedProject.keys[0].dsn.public,
+          selectedFeatures,
+          reduceDataCollection,
+        );
+      } catch (e) {
+        clack.log.warn(
+          'Could not automatically set up Sentry initialization. Please set it up manually using instructions from https://docs.sentry.io/platforms/javascript/guides/cloudflare/',
+        );
+        debug(e);
+        return false;
+      }
+    },
+  );
+
+  if (!sentryInitializationSucceeded) {
+    clack.outro(
+      'The Sentry SDK was installed, but the worker entry point was not configured. Follow the manual setup instructions above before deploying.',
+    );
+    return;
+  }
 
   const mainFile = getEntryPointFromWranglerConfig();
 
