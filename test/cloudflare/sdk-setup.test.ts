@@ -75,7 +75,8 @@ describe('createSentryInitFile', () => {
   });
 
   it('creates a new Sentry-ready default entry point only when no entry point exists', async () => {
-    const template = 'export default Sentry.withSentry(config, { async fetch() { return new Response("hello"); } });';
+    const template =
+      'export default Sentry.withSentry(config, { async fetch() { return new Response("hello"); } });';
     const getCloudflareWorkerTemplateSpy = vi
       .spyOn(templates, 'getCloudflareWorkerTemplate')
       .mockReturnValue(template);
@@ -104,7 +105,10 @@ describe('createSentryInitFile', () => {
   it('wraps an existing default entry point instead of overwriting it when wrangler has no main', async () => {
     const expectedPath = path.join(tmpDir, defaultEntryPoint);
     await fs.promises.mkdir(path.dirname(expectedPath), { recursive: true });
-    await fs.promises.writeFile(expectedPath, 'export default { fetch() { return new Response("keep"); } };');
+    await fs.promises.writeFile(
+      expectedPath,
+      'export default { fetch() { return new Response("keep"); } };',
+    );
     getEntryPointFromWranglerConfigMock.mockReturnValue(undefined);
     const originalContent = fs.readFileSync(expectedPath, 'utf-8');
     const wrapWorkerWithSentrySpy = vi
@@ -236,8 +240,12 @@ describe('createSentryInitFile', () => {
         const result = await createSentryInitFile(testDsn, testFeatures, false);
 
         expect(result).toBe(false);
-        expect(fs.existsSync(path.join(tmpDir, 'missing-worker.ts'))).toBe(false);
-        expect(fs.existsSync(path.join(tmpDir, defaultEntryPoint))).toBe(false);
+        expect(
+          fs.existsSync(path.join(tmpDir, 'missing-worker.ts')),
+        ).toBe(false);
+        expect(
+          fs.existsSync(path.join(tmpDir, defaultEntryPoint)),
+        ).toBe(false);
         expect(clackMocks.success).not.toHaveBeenCalled();
         expect(clackMocks.warn).toHaveBeenCalledWith(
           'The configured worker entry point missing-worker.ts does not exist. No worker file was created.',
@@ -256,6 +264,6 @@ describe('createSentryInitFile', () => {
 
         expect(wrapWorkerWithSentrySpy).not.toHaveBeenCalled();
       });
-    });;
+    });
   });
 });
