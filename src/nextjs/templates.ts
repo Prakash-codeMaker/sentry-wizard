@@ -520,7 +520,7 @@ export function getSentryExamplePagesDirApiRoute({
 
 `;
   const nextImport = isTypeScript
-    ? 'import type { NextApiRequest, NextApiResponse } from "next";\\n\\n'
+    ? 'import type { NextApiRequest, NextApiResponse } from "next";\n\n'
     : '';
 
   const loggerCall = `  Sentry.logger.info("Sentry example API called");
@@ -600,7 +600,7 @@ export ${
 
 export function getSentryDefaultUnderscoreErrorPage(isTypeScript: boolean) {
   return `import * as Sentry from "@sentry/nextjs";
-${isTypeScript ? 'import type { NextPage, NextPageContext } from "next";\\n' : ''}import Error from "next/error";
+${isTypeScript ? 'import type { NextPage, NextPageContext } from "next";\n' : ''}import Error from "next/error";
 
 const CustomErrorComponent${isTypeScript ? ': NextPage<{ statusCode: number }>' : ''} = (props${isTypeScript ? ': { statusCode: number }' : ''}) => {
   return <Error statusCode={props.statusCode} />;
