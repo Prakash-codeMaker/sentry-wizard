@@ -67,7 +67,9 @@ export async function createSentryInitFile(
     clack.log.warn(
       `The configured worker entry point ${chalk.cyan(entryPoint)} does not exist. No worker file was created.`,
     );
-    clack.log.step('Create the configured entry point and add Sentry initialization:');
+    clack.log.step(
+      'Create the configured entry point and add Sentry initialization:',
+    );
     clack.note(
       chalk.cyan(
         getCloudflareWorkerTemplate(
@@ -103,6 +105,8 @@ export async function createSentryInitFile(
     { encoding: 'utf-8', flag: 'wx' },
   );
 
-  clack.log.success(`Created ${chalk.cyan(defaultEntryPoint)} with Sentry initialization.`);
+  clack.log.success(
+    `Created ${chalk.cyan(defaultEntryPoint)} with Sentry initialization.`,
+  );
   return true;
 }
