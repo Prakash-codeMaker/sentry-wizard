@@ -819,7 +819,9 @@ describe('Next.js code templates', () => {
 
       expect(template).toContain('constructor(message: string | undefined)');
       expect(template).toContain('class SentryExampleAPIError extends Error');
-      expect(template).toContain('export default function handler(_req: NextApiRequest, res: NextApiResponse)');
+      expect(template).toContain(
+        'export default function handler(_req: NextApiRequest, res: NextApiResponse)',
+      );
     });
 
     it('generates Pages Router API route without TypeScript types', () => {
@@ -830,6 +832,7 @@ describe('Next.js code templates', () => {
       expect(template).toContain('constructor(message)');
       expect(template).toContain('class SentryExampleAPIError extends Error');
       expect(template).toContain('export default function handler(_req, res)');
+      expect(template).not.toContain('NextApiRequest');
     });
 
     it('generates Pages Router API route with logger calls', () => {
