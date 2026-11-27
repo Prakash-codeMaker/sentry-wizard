@@ -233,11 +233,17 @@ describe('createSentryInitFile', () => {
 
     describe('and the configured entry point file does not exist', () => {
       beforeEach(() => {
-        getEntryPointFromWranglerConfigMock.mockReturnValue('missing-worker.ts');
+        getEntryPointFromWranglerConfigMock.mockReturnValue(
+          'missing-worker.ts',
+        );
       });
 
       it('does not create a different worker or report success', async () => {
-        const result = await createSentryInitFile(testDsn, testFeatures, false);
+        const result = await createSentryInitFile(
+          testDsn,
+          testFeatures,
+          false,
+        );
 
         expect(result).toBe(false);
         expect(
